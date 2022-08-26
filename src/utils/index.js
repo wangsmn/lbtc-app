@@ -1,12 +1,11 @@
 import * as echarts from "echarts";
-import "echarts-liquidfill";
-import "echarts-wordcloud";
-import "./china";
+// import "echarts-liquidfill";
+// import "echarts-wordcloud";
 
 export const setSize = (num) => {
   var fontSize = document.documentElement.style.fontSize.split("px")[0];
   if (fontSize) {
-    const scale = document.documentElement.clientWidth / 1080;
+    const scale = document.documentElement.clientWidth / 750;
     return scale * num;
   } else {
     return num;
@@ -36,7 +35,7 @@ export const initLineChart = (data, callBack) => {
   let options = data.options || {};
   const font = {
     color: "#8F9FB3",
-    fontSize: setSize(29),
+    fontSize: setSize(20),
     fontweight: 400,
   };
 
@@ -55,19 +54,19 @@ export const initLineChart = (data, callBack) => {
     ],
     title: options.title,
     grid: {
-      left: options.left || "2%",
+      left: options.left || "4%",
       bottom: options.bottom || setSize(10),
       right: options.right || "1%",
-      top: options.top || setSize(80),
+      top: options.top || setSize(140),
       containLabel: true,
     },
     legend: {
       top: 0,
       left: "center",
       icon: "rect",
-      itemGap: setSize(35),
-      itemWidth: setSize(23),
-      itemHeight: setSize(23),
+      itemGap: setSize(20),
+      itemWidth: setSize(18),
+      itemHeight: setSize(18),
       textStyle: {
         ...font,
       },
@@ -104,8 +103,8 @@ export const initLineChart = (data, callBack) => {
     yAxis: [
       {
         type: "value",
-        name: options.unit,
-        nameGap: setSize(36),
+        name: options.yAxisName,
+        nameGap: setSize(26),
         nameTextStyle: {
           ...font,
           padding: [0, setSize(70), 0, 0],
@@ -834,113 +833,113 @@ export const initGaugeChart = (data) => {
   });
 };
 
-export const initLiquidfillChart = (data) => {
-  const font = {
-    color: "rgba(255, 255, 255, 1)",
-    fontSize: setSize(80),
-    fontweight: 400,
-  };
+// export const initLiquidfillChart = (data) => {
+//   const font = {
+//     color: "rgba(255, 255, 255, 1)",
+//     fontSize: setSize(80),
+//     fontweight: 400,
+//   };
 
-  let myChart = echarts.getInstanceByDom(document.getElementById(data.id));
-  if (myChart == null) {
-    myChart = echarts.init(document.getElementById(data.id));
-  }
-  let option = {
-    title: {
-      text: "水质指数",
-      bottom: "30%",
-      left: "center",
-      textStyle: {
-        fontSize: setSize(35),
-        color: "rgba(255, 255, 255, 1)",
-      },
-    },
-    series: [
-      {
-        type: "liquidFill",
-        radius: "80%",
-        data: [0.28],
-        label: {
-          color: "#fff",
-          insideColor: "transparent",
-          formatter: () => {
-            return data.value;
-          },
-          textStyle: {
-            ...font,
-            fontWeight: "bold",
-          },
-        },
-        outline: {
-          show: true,
-          borderDistance: 5,
-          itemStyle: {
-            borderColor: "rgba(230, 230, 230, 1)",
-            borderWidth: 1,
-          },
-        },
-        itemStyle: {
-          color: setColor("rgba(69, 159, 247, 1)", "rgba(39, 201, 250, 1)"),
-        },
-        backgroundStyle: {
-          color: "rgba(225, 247, 255, 1)",
-        },
-      },
-    ],
-  };
+//   let myChart = echarts.getInstanceByDom(document.getElementById(data.id));
+//   if (myChart == null) {
+//     myChart = echarts.init(document.getElementById(data.id));
+//   }
+//   let option = {
+//     title: {
+//       text: "水质指数",
+//       bottom: "30%",
+//       left: "center",
+//       textStyle: {
+//         fontSize: setSize(35),
+//         color: "rgba(255, 255, 255, 1)",
+//       },
+//     },
+//     series: [
+//       {
+//         type: "liquidFill",
+//         radius: "80%",
+//         data: [0.28],
+//         label: {
+//           color: "#fff",
+//           insideColor: "transparent",
+//           formatter: () => {
+//             return data.value;
+//           },
+//           textStyle: {
+//             ...font,
+//             fontWeight: "bold",
+//           },
+//         },
+//         outline: {
+//           show: true,
+//           borderDistance: 5,
+//           itemStyle: {
+//             borderColor: "rgba(230, 230, 230, 1)",
+//             borderWidth: 1,
+//           },
+//         },
+//         itemStyle: {
+//           color: setColor("rgba(69, 159, 247, 1)", "rgba(39, 201, 250, 1)"),
+//         },
+//         backgroundStyle: {
+//           color: "rgba(225, 247, 255, 1)",
+//         },
+//       },
+//     ],
+//   };
 
-  myChart.setOption(option, true);
+//   myChart.setOption(option, true);
 
-  window.addEventListener("resize", () => {
-    myChart.setOption(option, true);
-    myChart.resize();
-  });
-};
+//   window.addEventListener("resize", () => {
+//     myChart.setOption(option, true);
+//     myChart.resize();
+//   });
+// };
 
-export const initWordcloudChart = (data) => {
-  let myChart = echarts.getInstanceByDom(document.getElementById(data.id));
-  if (myChart == null) {
-    myChart = echarts.init(document.getElementById(data.id));
-  }
-  let option = {
-    tooltip: {
-      show: true,
-      formatter: "{b}: {c}",
-      textStyle: {
-        fontSize: setSize(40),
-      },
-    },
-    series: [
-      {
-        type: "wordCloud",
-        rotationRange: [0, 0],
-        shape: "pentagon ",
-        textPadding: 0,
-        autoSize: {
-          enable: true,
-          minSize: setSize(12),
-        },
-        sizeRange: [setSize(30), setSize(60)],
-        width: "100%",
-        height: "100%",
-        left: "center",
-        gridSize: setSize(80),
-        drawOutOfBound: false,
-        textStyle: {
-          backgroundColor: "rgba(60, 128, 242, 1)",
-          color: "#fff",
-          padding: [setSize(20), setSize(30)],
-          borderRadius: [0, 28, 28, 28],
-        },
-        data: data.data,
-      },
-    ],
-  };
+// export const initWordcloudChart = (data) => {
+//   let myChart = echarts.getInstanceByDom(document.getElementById(data.id));
+//   if (myChart == null) {
+//     myChart = echarts.init(document.getElementById(data.id));
+//   }
+//   let option = {
+//     tooltip: {
+//       show: true,
+//       formatter: "{b}: {c}",
+//       textStyle: {
+//         fontSize: setSize(40),
+//       },
+//     },
+//     series: [
+//       {
+//         type: "wordCloud",
+//         rotationRange: [0, 0],
+//         shape: "pentagon ",
+//         textPadding: 0,
+//         autoSize: {
+//           enable: true,
+//           minSize: setSize(12),
+//         },
+//         sizeRange: [setSize(30), setSize(60)],
+//         width: "100%",
+//         height: "100%",
+//         left: "center",
+//         gridSize: setSize(80),
+//         drawOutOfBound: false,
+//         textStyle: {
+//           backgroundColor: "rgba(60, 128, 242, 1)",
+//           color: "#fff",
+//           padding: [setSize(20), setSize(30)],
+//           borderRadius: [0, 28, 28, 28],
+//         },
+//         data: data.data,
+//       },
+//     ],
+//   };
 
-  myChart.setOption(option, true);
+//   myChart.setOption(option, true);
 
-  window.addEventListener("resize", () => {
-    myChart.setOption(option, true);
-    myChart.resize();
-  });
-};
+//   window.addEventListener("resize", () => {
+//     myChart.setOption(option, true);
+//     myChart.resize();
+//   });
+// };

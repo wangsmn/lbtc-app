@@ -87,10 +87,10 @@ video {
   margin: 0;
   padding: 0;
   border: 0;
-  font-size: 100%;
   font: inherit;
   font-weight: normal;
   vertical-align: baseline;
+  box-sizing: border-box;
 }
 /* HTML5 display-role reset for older browsers */
 article,
@@ -153,7 +153,6 @@ a {
 }
 html,
 body {
-  width: 100%;
   font-family: "Arial", "Microsoft YaHei", "黑体", "宋体", "微软雅黑",
     sans-serif;
 }
@@ -161,9 +160,7 @@ body {
   line-height: 1;
   -webkit-text-size-adjust: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-}
-html {
-  overflow-y: scroll;
+  box-sizing: border-box;
 }
 
 /*清除浮动*/

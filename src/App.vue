@@ -6,10 +6,12 @@
 
 <style lang="less">
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "PingFang";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: #f0f4f7;
+  font-size: 14px;
+  color: #333;
   width: 100%;
   height: 100%;
 }

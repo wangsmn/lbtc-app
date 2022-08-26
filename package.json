@@ -12,6 +12,7 @@
     "amfe-flexible": "^2.2.1",
     "axios": "^0.27.2",
     "core-js": "^3.6.5",
+    "echarts": "^5.3.3",
     "postcss-px2rem": "^0.3.0",
     "vant": "^2.12.48",
     "vue": "^2.6.11",
@@ -32,6 +33,7 @@
     "less": "^3.0.4",
     "less-loader": "^5.0.0",
     "prettier": "^2.2.1",
+    "vue-loader": "^9.9.5",
     "vue-template-compiler": "^2.6.11"
   }
 }

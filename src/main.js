@@ -6,11 +6,9 @@ import Vant from "vant";
 
 import "amfe-flexible";
 import "vant/lib/index.css";
-
-import "@/styles/reset.css";
 import "@/styles/common.css";
+import "@/styles/reset.css";
 Vue.use(Vant);
-
 Vue.config.productionTip = false;
 
 new Vue({

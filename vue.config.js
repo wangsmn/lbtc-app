@@ -1,4 +1,8 @@
+
 module.exports = {
+  publicPath: "./",
+  outputDir: "app",
+  lintOnSave: true,
   css: {
     loaderOptions: {
       postcss: {
@@ -10,4 +14,19 @@ module.exports = {
       },
     },
   },
+  devServer: {
+    open: false,
+    hot: true,
+    disableHostCheck: true,
+    proxy: {
+      '/api': {
+        target: 'http://zxjc.lbtc.cn:8888',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
+      },
+    }
+  }
 };
+
