@@ -4,7 +4,7 @@
 }
 .page-cnotain {
   width: 100%;
-  height: calc(100% - 50px);
+  height: calc(100% - 40px);
   overflow-y: auto;
 }
 section.card {
@@ -20,7 +20,7 @@ section.card .contain {
 }
 h2.title {
   width: 100%;
-  height: 50px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -28,12 +28,21 @@ h2.title {
   font-size: 18px;
   background: #3C80F2;
   border-radius: 0px 0px 4px 4px;
+  position: relative;
+}
+h2.title .icon {
+  position: absolute;
+}
+h2.title .icon.right-icon {
+  right: 10px;
+}
+h2.title .icon.left-icon {
+  left: 10px;
 }
 h4.title {
   color: #333333;
   position: relative;
   padding-left: 10px;
-  font-weight: bold;
   display: flex;
   justify-content: space-between;
   font-size: 16px;
@@ -56,11 +65,11 @@ h4.title::before {
   padding: 0 10px !important;
 }
 .device-content li {
-  width: calc(50% - 10px);
+  width: calc(50% - 8px);
   min-height: 60px;
   flex-shrink: 0;
   display: flex;
-  margin: 4px;
+  margin: 3px 4px;
   align-items: center;
   padding: 10px 2px 10px 6px;
   border-radius: 8px;
@@ -72,7 +81,7 @@ h4.title::before {
 }
 .device-content li > div .name {
   color: #333;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 .device-content li > div .value i {
   color: #333;
@@ -82,6 +91,26 @@ h4.title::before {
 .device-content li > div .status {
   height: 30px;
   margin-left: 10px;
+}
+.device-content li:first-child > div,
+.device-content li:nth-child(2) > div {
+  width: 80%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.device-content li:first-child > div .name,
+.device-content li:nth-child(2) > div .name {
+  margin-bottom: 0;
+}
+.device-content li:first-child > div span,
+.device-content li:nth-child(2) > div span {
+  display: flex;
+  align-items: center;
+}
+.device-content li:first-child > div img,
+.device-content li:nth-child(2) > div img {
+  height: 20px;
 }
 .device-content li > img {
   height: 30px;
@@ -93,10 +122,55 @@ h4.title::before {
 .choose-date {
   display: flex;
   align-items: center;
+  padding-right: 20px;
+  background: url(~@/assets/rili.png) right center no-repeat;
+  background-size: 20px;
+  height: 50px;
+}
+.choose-date .van-cell {
+  padding: 10px 5px;
 }
 .choose-date .van-cell__value--alone {
   text-align: right;
 }
 .choose-date > span {
   white-space: nowrap;
+}
+.list .list-header {
+  width: 100%;
+  padding: 10px 0;
+  background-color: rgba(60, 128, 242, 0.8);
+  color: #fff;
+  display: flex;
+  font-size: 12px;
+  text-align: center;
+}
+.list .list-body .list-item {
+  display: flex;
+  padding: 4px 0;
+}
+.list .list-body .list-item:nth-child(odd) {
+  background-color: rgba(60, 128, 242, 0.1);
+}
+.list .list-body .list-item > span:first-child {
+  transform: scale(0.9);
+}
+.list .list-header > span,
+.list .list-body .list-item > span {
+  font-size: 12px;
+  width: 12%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.list .list-header > span i,
+.list .list-body .list-item > span i {
+  transform: scale(0.8);
+}
+.list .list-header > span:first-child,
+.list .list-body .list-item > span:first-child {
+  width: 16%;
+  text-align: center;
 }

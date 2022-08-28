@@ -1,8 +1,36 @@
 <template>
   <div class="Home">
     <h2 class="title">
-      <span>决策</span>
+      <span>首页</span>
+      <span class="icon right-icon">
+        <van-icon name="search" @click.stop="drawer = true" />
+      </span>
     </h2>
+
+    <el-drawer
+      title="单位列表"
+      :visible.sync="drawer"
+      direction="ltr"
+      custom-class="myDrawer"
+    >
+      <div class="filterBox">
+        <el-select
+          v-model="filterData.value"
+          filterable
+          placeholder="请选择"
+          @change="filterFn"
+        >
+          <el-option
+            v-for="item in filterData.options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </div>
+    </el-drawer>
+
     <div id="mapMain"></div>
     <van-popup
       v-model="popupFlag"
@@ -26,9 +54,9 @@
         <div class="device-list">
           <van-collapse v-model="activeNames">
             <van-collapse-item
-              :title="item.deviceName"
+              :title="'设备' + (i + 1) + ': ' + item.deviceName"
               :name="item.deviceMac"
-              v-for="item in deviceData.data"
+              v-for="(item, i) in deviceData.data"
               :key="item.deviceMac"
               :is-link="false"
             >
@@ -210,6 +238,13 @@ export default {
           },
         ],
       },
+
+      filterData: {
+        value: "",
+        options: [],
+      },
+
+      drawer: false,
     };
   },
   computed: {
@@ -249,6 +284,14 @@ export default {
             if (res.data && res.data.user) {
               const data = res.data.user;
               this.point = data;
+              this.filterData.options = data.map((n, index) => {
+                return {
+                  value: n.longitude || index,
+                  label: n.company,
+                };
+              });
+
+              console.log(this.filterData.options);
               this.point.forEach((item) => {
                 this.setPoint(item);
               });
@@ -299,7 +342,11 @@ export default {
                     ...res.data.dataS,
                     deviceName: n.deviceName,
                   });
-                this.activeNames = [this.deviceData.data[0].deviceMac];
+
+                this.activeNames = this.deviceData.data.map((n) => {
+                  return n.deviceMac;
+                });
+                // this.activeNames = [this.deviceData.data[0].deviceMac];
                 console.log(this.deviceData.data);
               } else {
                 Toast.fail(res.rspMsg);
@@ -311,14 +358,23 @@ export default {
         });
     },
 
+    filterFn() {
+      this.drawer = false;
+
+      let pos = this.filterData.value.split(",");
+      console.log(pos);
+
+      this.map.setZoomAndCenter(14, [Number(pos[0]) + 0.01, pos[1]]);
+    },
+
     goPage(n) {
       this.$router.push({
         path: "/RealtimeData",
         query: {
           name: n.deviceName,
-          mac: n.deviceMac
-        }
-      })
+          mac: n.deviceMac,
+        },
+      });
     },
   },
   created() {},
@@ -332,6 +388,7 @@ export default {
 .Home {
   width: 100%;
   height: 100%;
+  position: relative;
   #mapMain {
     padding: 0px;
     margin: 0px;
@@ -339,8 +396,23 @@ export default {
     height: calc(100% - 50px);
   }
 
+  .filterBox {
+    position: absolute;
+    top: 50px;
+    z-index: 9999;
+    width: 100%;
+    height: 60px;
+    background: #fff;
+    padding: 10px 0 10px 7px;
+
+    ::v-deep.el-input__inner {
+      height: 30px !important;
+    }
+  }
+
   .popup-content {
     padding-top: 20px;
+    height: 100%;
     .list {
       padding: 0 10px;
       margin-top: 10px;
@@ -359,7 +431,7 @@ export default {
     }
 
     .device-list {
-      height: 420px;
+      max-height: 60%;
       overflow-y: auto;
     }
   }
@@ -372,6 +444,10 @@ export default {
 }
 .van-cell {
   padding: 6px 10px !important;
+}
+
+.van-cell__title {
+  color: #3c80f2 !important;
 }
 
 .van-collapse-item__content {
@@ -401,6 +477,15 @@ export default {
     padding: 0 4px 0 42px;
     top: 2px;
     border-radius: 19px 0 0 19px;
+  }
+}
+
+.myDrawer {
+  border-radius: 0 4px 4px 0;
+  width: 70% !important;
+  .el-drawer__header {
+    padding: 20px 0 20px 5px;
+    font-size: 16px;
   }
 }
 </style>

@@ -9,7 +9,7 @@ import { Toast } from "vant";
 import store from "../store/index";
 
 // 请求超时时间
-axios.defaults.timeout = 10000;
+axios.defaults.timeout = 20000;
 
 // post请求头
 axios.defaults.headers.post["Content-Type"] = "application/json";

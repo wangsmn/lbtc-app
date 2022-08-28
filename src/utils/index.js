@@ -34,8 +34,8 @@ export const creatId = () => {
 export const initLineChart = (data, callBack) => {
   let options = data.options || {};
   const font = {
-    color: "#8F9FB3",
-    fontSize: setSize(20),
+    color: "#333333",
+    fontSize: setSize(24),
     fontweight: 400,
   };
 
@@ -56,8 +56,8 @@ export const initLineChart = (data, callBack) => {
     grid: {
       left: options.left || "4%",
       bottom: options.bottom || setSize(10),
-      right: options.right || "1%",
-      top: options.top || setSize(140),
+      right: options.right || setSize(50),
+      top: options.top || setSize(30),
       containLabel: true,
     },
     legend: {
@@ -84,7 +84,8 @@ export const initLineChart = (data, callBack) => {
       name: options.xAxisName,
       nameTextStyle: {
         verticalAlign: "bottom",
-        padding: [0, 0, setSize(-16), 0],
+        padding: [0, 0, setSize(-40), 0],
+        ...font,
       },
       axisLabel: {
         ...font,
@@ -330,7 +331,7 @@ export const initBarChart = (data) => {
       },
     },
     xAxis: {
-      type: "value",
+      type: "category",
       name: options.xAxisName,
       nameTextStyle: {
         verticalAlign: "bottom",
@@ -348,6 +349,7 @@ export const initBarChart = (data) => {
       splitLine: {
         show: false,
       },
+      data: data.xAxis,
     },
     yAxis: [
       {
@@ -373,7 +375,7 @@ export const initBarChart = (data) => {
         splitLine: {
           show: false,
         },
-        data: data.xAxis,
+        data: data.yAxis,
       },
     ],
     series: data.series,
