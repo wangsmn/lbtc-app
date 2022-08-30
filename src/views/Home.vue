@@ -431,7 +431,7 @@ export default {
     }
 
     .device-list {
-      max-height: 60%;
+      max-height: 62%;
       overflow-y: auto;
     }
   }

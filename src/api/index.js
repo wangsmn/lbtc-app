@@ -24,3 +24,7 @@ export const queryPoliceTypeNum = (data) => post(`${baseURL}/zx/queryPoliceTypeN
 // 查询特定在线检测设备某段时间的详细超标详情
 export const queryPoliceData = (data) => post(`${baseURL}/police/queryPoliceData`, data);
 
+// 查询一段时间内每月超标的在线设备数
+export const queryPoliceMonthData = (data) => post(`${baseURL}/police/queryPoliceMonthData`, data);
+
+

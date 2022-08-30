@@ -9,7 +9,7 @@
         <van-icon name="bars" @click.stop="" />
       </span>
     </h2>
-    <div class="page-cnotain">
+    <div class="page-contain">
       <section class="card">
         <h4 class="title">实时数据</h4>
         <div class="contain">
@@ -56,7 +56,7 @@
         </div>
       </section>
       <section class="card">
-        <h4 class="title">告警分析 <van-icon name="bars" @click.stop="" /></h4>
+        <h4 class="title">告警分析 <van-icon name="bars" @click.stop="$router.push({path: '/AlarmAnalysis'})" /></h4>
         <div class="contain">
           <div class="choose-date" v-show="false">
             <span>请选择日期</span>
@@ -194,7 +194,7 @@ import {
   queryPoliceData,
 } from "@/api/index";
 import { DropdownMenu, DropdownItem, Calendar, Empty } from "vant";
-import { initLineChart, setSize, initBarChart } from "@/utils/index";
+import { initLineChart, setSize } from "@/utils/index";
 
 export default {
   name: "",
@@ -487,40 +487,138 @@ export default {
       })
         .then((res) => {
           if (res.rspMsg === "操作成功") {
-            let data = res.data;
-            console.log(data);
-            let seriesArr = [
+            let data = res.data,
+              xAxis = [],
+              types = [];
+            this.exceedingStandard.data = data;
+            let series = [
               {
-                name: '总数',
+                name: "总数",
                 type: "bar",
-                param: 'totalNum',
+                param: "totalNum",
+                barWidth: setSize(20),
+                itemStyle: {
+                  color: "#006cff",
+                },
                 data: [],
               },
               {
-                name: '报警数',
+                name: "报警数",
                 type: "bar",
-                param: 'policeNum',
+                param: "policeNum",
+                barWidth: setSize(20),
+                barGap: "-100%",
+                itemStyle: {
+                  color: "#ee0a24",
+                },
+                label: {
+                  show: true,
+                  position: "top",
+                  formatter: (n) => {
+                    console.log(n);
+
+                    let data = this.exceedingStandard.data.find(
+                      (v) => v.syncTime === n.name
+                    );
+
+                    console.log(data);
+
+                    return `{a|${data.totalNum}}/{b|${data.policeNum}}`
+                  },
+
+                  rich: {
+                    a: {
+                      fontSize: setSize(18),
+                      color: "#006cff",
+                    },
+
+                    b: {
+                      fontSize: setSize(18),
+                      color: "#ee0a24",
+                    },
+                  },
+                },
                 data: [],
               },
               {
-                name: '浓度最大值',
+                name: "浓度最大值",
                 type: "line",
-                param: 'max_data',
+                param: "max_data",
+                itemStyle: {
+                  color: "#5b5b5b",
+                },
+                data: [],
+                yAxisIndex: 1,
+              },
+              {
+                name: "浓度最小值",
+                type: "line",
+                param: "max_data",
+                yAxisIndex: 1,
+                itemStyle: {
+                  color: "#5BB1FC",
+                },
                 data: [],
               },
               {
-                name: '浓度最小值',
+                name: "浓度平均值",
                 type: "line",
-                param: 'max_data',
+                param: "max_data",
+                yAxisIndex: 1,
+                itemStyle: {
+                  color: "#6ec6c9",
+                },
                 data: [],
               },
-              {
-                name: '浓度平均值',
-                type: "line",
-                param: 'max_data',
-                data: [],
-              }
             ];
+
+            data.forEach((n) => {
+              xAxis.push(n.syncTime);
+              types.push(n.policeType);
+              series.forEach((item) => {
+                item.data.push(n[item.param]);
+              });
+            });
+
+            initLineChart({
+              id: "exceeding-standard-chart",
+              xAxis,
+              series,
+              options: {
+                yAxisName: "条",
+                yAxisName1: "mol/L",
+                top: setSize(150),
+                axisLabel: {
+                  formatter: (n) => {
+                    let v = n.split(" ");
+                    return v[0] + "\n" + v[1];
+                  },
+                },
+                tooltip: {
+                  formatter: (n) => {
+                    let data = this.exceedingStandard.data.find(
+                      (v) => v.syncTime === n[0].name
+                    );
+                    let str = `报警类型: ${data.policeType} </br> 报警时间: ${n[0].name}</br>`;
+                    n.forEach((item) => {
+                      str += `${item.marker} ${item.seriesName}: ${item.value}</br>`;
+                    });
+                    return str;
+                  },
+                },
+                // legend: {
+                //   selectedMode: "single",
+                //   selected: {
+                //     油烟最大值: true,
+                //     油烟平均值: false,
+                //     颗粒物最大值: false,
+                //     颗粒物平均值: false,
+                //     非甲烷总烃最大值: false,
+                //     非甲烷总烃平均值: false,
+                //   },
+                // },
+              },
+            });
           }
         })
         .catch((err) => {
@@ -637,7 +735,7 @@ export default {
           data: seriesData,
         },
         options: {
-          yAxisName: "件",
+          yAxisName: "条",
           xAxisName: "日",
           top: setSize(50),
         },

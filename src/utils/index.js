@@ -56,7 +56,7 @@ export const initLineChart = (data, callBack) => {
     grid: {
       left: options.left || "4%",
       bottom: options.bottom || setSize(10),
-      right: options.right || setSize(50),
+      right: options.right || setSize(60),
       top: options.top || setSize(30),
       containLabel: true,
     },
@@ -77,6 +77,7 @@ export const initLineChart = (data, callBack) => {
       textStyle: {
         ...font,
       },
+      ...options.tooltip
     },
     xAxis: {
       type: "category",
@@ -89,7 +90,7 @@ export const initLineChart = (data, callBack) => {
       },
       axisLabel: {
         ...font,
-        formatter: options.axisLabel,
+        ...options.axisLabel,
       },
       axisLine: {
         show: true,
@@ -126,8 +127,8 @@ export const initLineChart = (data, callBack) => {
       },
       {
         type: "value",
-        name: options.unit1,
-        nameGap: setSize(36),
+        name: options.yAxisName1,
+        nameGap: setSize(26),
         nameTextStyle: {
           ...font,
           padding: [0, 0, 0, setSize(70)],

@@ -19,6 +19,11 @@ const routes = [
     name: "RealtimeData",
     component: () => import("@/views/pages/RealtimeData.vue"),
   },
+  {
+    path: "/AlarmAnalysis",
+    name: "AlarmAnalysis",
+    component: () => import("@/views/pages/AlarmAnalysis.vue"),
+  },
 ];
 
 const router = new VueRouter({

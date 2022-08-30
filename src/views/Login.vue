@@ -2,21 +2,23 @@
   <div class="Login">
     <div class="contain">
       <van-form @submit="onSubmit">
-        <van-field
-          v-model="username"
-          name="用户名"
-          label="用户名"
-          placeholder="用户名"
-          :rules="[{ required: true, message: '请填写用户名' }]"
-        />
-        <van-field
-          v-model="password"
-          type="password"
-          name="密码"
-          label="密码"
-          placeholder="密码"
-          :rules="[{ required: true, message: '请填写密码' }]"
-        />
+        <div class="submit-box">
+          <van-field
+            v-model="username"
+            name="用户名"
+            label="用户名"
+            placeholder="用户名"
+            :rules="[{ required: true, message: '请填写用户名' }]"
+          />
+          <van-field
+            v-model="password"
+            type="password"
+            name="密码"
+            label="密码"
+            placeholder="密码"
+            :rules="[{ required: true, message: '请填写密码' }]"
+          />
+        </div>
         <div class="submit">
           <van-button round block type="info" native-type="submit"
             >登录</van-button
@@ -53,7 +55,7 @@ export default {
           if (res.rspMsg === "操作成功") {
             this.SET_TOKEN(res.data.token);
             this.SET_USER(res.data.user);
-            console.log(res)
+            console.log(res);
             this.$router.push("/Home");
           } else {
             Toast.fail(res.rspMsg);
@@ -85,7 +87,15 @@ export default {
 
     .submit {
       width: 94%;
-      margin: 40px auto 0;
+      margin: 30px auto 0;
+    }
+
+    .submit-box{
+      height: 100px;
+    }
+    .van-form{
+      width: 80%;
+      margin: 30px auto 0;
     }
   }
 }

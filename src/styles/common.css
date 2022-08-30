@@ -1,8 +1,8 @@
 @font-face {
   font-family: PingFang;
-  src: url(font/PingFang-Heavy.ttf);
+  src: url(font/SOURCEHANSANSCN-MEDIUM.OTF);
 }
-.page-cnotain {
+.page-contain {
   width: 100%;
   height: calc(100% - 40px);
   overflow-y: auto;
@@ -10,7 +10,7 @@
 section.card {
   width: 98%;
   border-radius: 2px;
-  padding: 10px;
+  padding: 10px 6px;
   margin: 10px auto;
   background: #fff;
   box-sizing: border-box;
@@ -117,7 +117,7 @@ h4.title::before {
 }
 .chart {
   width: 100%;
-  height: 300px;
+  height: 250px;
 }
 .choose-date {
   display: flex;
