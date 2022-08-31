@@ -6,7 +6,10 @@
       </span>
       <span>{{ device.name }}</span>
       <span class="icon right-icon">
-        <van-icon name="bars" @click.stop="" />
+        <van-icon
+          name="bulb-o"
+          @click.stop="$router.push({ path: '/AlarmAnalysis' })"
+        />
       </span>
     </h2>
     <div class="page-contain">
@@ -56,7 +59,10 @@
         </div>
       </section>
       <section class="card">
-        <h4 class="title">告警分析 <van-icon name="bars" @click.stop="$router.push({path: '/AlarmAnalysis'})" /></h4>
+        <h4 class="title">
+          告警分析
+          <!-- <van-icon name="bars" @click.stop="$router.push({path: '/AlarmAnalysis'})" /> -->
+        </h4>
         <div class="contain">
           <div class="choose-date" v-show="false">
             <span>请选择日期</span>
@@ -78,7 +84,6 @@
               allow-same-day
             />
           </div>
-          <!-- <Buttons :data="policeData.btn" @change="changeValue" /> -->
           <Picker :data="policeData.pickerData" @changeValue="changeValue" />
           <div id="police-chart" class="chart" style="height: 6rem"></div>
         </div>
@@ -109,10 +114,10 @@
           <van-empty
             description="暂无数据"
             v-if="
-              !exceedingStandard.data || exceedingStandard.data.length === 0
+              exceedingStandard.data && exceedingStandard.data.length == 0
             "
           />
-          <div id="exceeding-standard-chart" class="chart"></div>
+          <div v-else id="exceeding-standard-chart" class="chart"></div>
         </div>
       </section>
       <section class="card">
@@ -144,7 +149,7 @@
           </h5>
           <van-empty
             description="暂无数据"
-            v-if="!historyData.data || historyData.data.length === 0"
+            v-if="!historyData.data || historyData.data.length == 0"
           />
           <div class="list" v-else>
             <p class="list-header">
@@ -185,7 +190,6 @@
 
 <script>
 import Picker from "@/components/Picker";
-import Buttons from "@/components/Buttons";
 import {
   queryDeviceData,
   getDeviceDataMA,
@@ -205,7 +209,6 @@ export default {
     [Calendar.name]: Calendar,
     [Empty.name]: Empty,
     Picker,
-    Buttons,
   },
   data() {
     return {
@@ -478,12 +481,9 @@ export default {
     queryPoliceDataFn() {
       let date = this.exceedingStandard.date.split(" 至 ");
       queryPoliceData({
-        // zxDeviceMac: this.device.mac,
-        zxDeviceMac: "055902202",
-        beginTime: "2021-12-01",
-        endTime: "2021-12-31",
-        //   startTime: date[0] + " 00:00:00",
-        // endTime: date[1] + " 59:59:59",
+        zxDeviceMac: this.device.mac,
+        beginTime: date[0],
+        endTime: date[1],
       })
         .then((res) => {
           if (res.rspMsg === "操作成功") {
@@ -491,6 +491,7 @@ export default {
               xAxis = [],
               types = [];
             this.exceedingStandard.data = data;
+
             let series = [
               {
                 name: "总数",
@@ -515,15 +516,11 @@ export default {
                   show: true,
                   position: "top",
                   formatter: (n) => {
-                    console.log(n);
-
                     let data = this.exceedingStandard.data.find(
                       (v) => v.syncTime === n.name
                     );
 
-                    console.log(data);
-
-                    return `{a|${data.totalNum}}/{b|${data.policeNum}}`
+                    return `{a|${data.totalNum}}/{b|${data.policeNum}}`;
                   },
 
                   rich: {
@@ -743,7 +740,6 @@ export default {
     },
   },
   created() {
-    console.log(this.$route.query);
     this.device = this.$route.query;
     this.getData(this.device.mac);
     this.queryHistoryDataPageFn();

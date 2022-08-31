@@ -21,8 +21,6 @@
           ></div>
         </div>
       </section>
-    </div>
-    <div class="page-contain">
       <section class="card">
         <h4 class="title">告警分析</h4>
         <div class="contain">
@@ -31,7 +29,6 @@
             <van-cell
               readonly
               clickable
-              name="calendar"
               :right-icon="require('@/assets/xiala.png')"
               placeholder="开始时间-结束时间"
               :value="alarmAnalysis.date"
@@ -44,15 +41,45 @@
               :style="{ height: '60%' }"
             >
               <van-datetime-picker
-                v-model="alarmAnalysis.date"
+                v-model="alarmAnalysis.currentDate"
                 type="year-month"
                 title="选择年月"
                 :min-date="minDate"
                 :max-date="maxDate"
                 :formatter="formatter"
+                @confirm="alarmAnalysisOnConfirm"
               />
             </van-popup>
           </div>
+
+          <van-divider
+            :style="{
+              color: '#3C80F2',
+              borderColor: '#3C80F2',
+              padding: '0 16px',
+            }"
+          >
+            告警事件次数占比
+          </van-divider>
+          <div
+            id="alarm-analysis-chart"
+            class="chart"
+            style="height: 6rem"
+          ></div>
+          <van-divider
+            :style="{
+              color: '#3C80F2',
+              borderColor: '#3C80F2',
+              padding: '0 16px',
+            }"
+          >
+            告警月度次数TOP20
+          </van-divider>
+          <div
+            id="alarm-analysis-chart1"
+            class="chart"
+            style="height: 6rem"
+          ></div>
         </div>
       </section>
     </div>
@@ -60,10 +87,23 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import Picker from "@/components/Picker";
 import { queryPoliceMonthData, getPoliceNumByType } from "@/api/index";
-import { DropdownMenu, DropdownItem, DatetimePicker, Empty } from "vant";
-import { initLineChart, setSize } from "@/utils/index";
+import {
+  DropdownMenu,
+  DropdownItem,
+  DatetimePicker,
+  Empty,
+  Divider,
+} from "vant";
+import {
+  initLineChart,
+  setSize,
+  initPieChart,
+  initTransverseBarChart,
+  setColor,
+} from "@/utils/index";
 
 export default {
   name: "AlarmAnalysis",
@@ -71,12 +111,17 @@ export default {
     [DropdownMenu.name]: DropdownMenu,
     [DropdownItem.name]: DropdownItem,
     [DatetimePicker.name]: DatetimePicker,
+    [Divider.name]: Divider,
     [Empty.name]: Empty,
     Picker,
   },
   data() {
     let year = new Date().getFullYear(),
       yearArr = [];
+
+    for (var i = 0; i <= 10; i++) {
+      yearArr.push(+year - i);
+    }
     return {
       maxDate: new Date(),
       minDate: new Date(2010, 0, 1),
@@ -89,7 +134,8 @@ export default {
         data: yearArr,
       },
       alarmAnalysis: {
-        date: new Date(),
+        currentDate: new Date(),
+        date: this.formatterDate(new Date()),
         show: false,
         btn: {
           button: [
@@ -112,8 +158,12 @@ export default {
       },
     };
   },
-  mounted() {
+  computed: {
+    ...mapState(["token", "user"]),
+  },
+  created() {
     this.queryPoliceMonthDataFn();
+    this.getPoliceNumByTypeFn();
   },
   methods: {
     formatter(type, val) {
@@ -125,8 +175,9 @@ export default {
       return val;
     },
     alarmAnalysisOnConfirm(date) {
-      this.policeData.date = this.formatterDate(date);
-      this.policeData.show = false;
+      this.alarmAnalysis.date = this.formatterDate(date);
+      this.alarmAnalysis.show = false;
+      this.getPoliceNumByTypeFn();
     },
 
     formatterDate(date) {
@@ -136,38 +187,10 @@ export default {
       }
       let year = date[0].getFullYear();
       let month = date[0].getMonth() + 1;
-      let dateT = date[0].getDate();
-      let year1, month1, dateT1;
-      if (date[1]) {
-        year1 = date[1].getFullYear();
-        month1 = date[1].getMonth() + 1;
-        dateT1 = date[1].getDate();
-      }
       if (month < 10) {
         month = "0" + month;
       }
-      if (month1 < 10) {
-        month1 = "0" + month1;
-      }
-      if (dateT < 10) {
-        dateT = "0" + dateT;
-      }
-      if (dateT1 < 10) {
-        dateT1 = "0" + dateT1;
-      }
-      let str = flag
-        ? year +
-          "-" +
-          month +
-          "-" +
-          dateT +
-          " 至 " +
-          year1 +
-          "-" +
-          month1 +
-          "-" +
-          dateT1
-        : year + "-" + month + "-" + dateT;
+      let str = year + "-" + month;
       return str;
     },
     changeValue(n) {
@@ -200,7 +223,6 @@ export default {
             let data = res.data,
               xAxis = [];
 
-            console.log(data);
             let series = [
               {
                 type: "bar",
@@ -231,7 +253,6 @@ export default {
                 yAxisName: "个",
                 top: setSize(60),
                 axisLabel: (n) => {
-                  console.log(n);
                   let v = n.split(" ");
                   return v[0] + "\n" + v[1];
                 },
@@ -252,18 +273,84 @@ export default {
 
     getPoliceNumByTypeFn() {
       getPoliceNumByType({
-        userId: 10238,
+        userId: this.user.id,
         type: 1,
-        startTime: "2022-08-01 00:00:00",
-        endTime: "2022-08-31 00:00:00",
+        startTime: this.alarmAnalysis.date + "-01 00:00:00",
+        endTime: this.alarmAnalysis.date + "-31 00:00:00",
         state: 3,
         num: 5,
       })
         .then((res) => {
           if (res.rspMsg === "操作成功") {
             let data = res.data,
-              xAxis = [];
-            console.log(data);
+              series = [];
+            series = data.map((n) => {
+              return {
+                name: n.policeType,
+                value: n.num,
+              };
+            });
+            initPieChart({
+              id: "alarm-analysis-chart",
+              series,
+              options: {
+                label: true,
+              },
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      getPoliceNumByType({
+        userId: this.user.id,
+        type: 2,
+        startTime: this.alarmAnalysis.date + "-01 00:00:00",
+        endTime: this.alarmAnalysis.date + "-31 00:00:00",
+        state: 3,
+        num: 15,
+      })
+        .then((res) => {
+          if (res.rspMsg === "操作成功") {
+            let data = res.data,
+              xAxis = [],
+              nameArr = [],
+              series = {
+                name: "",
+                type: "bar",
+                barWidth: setSize(29),
+                showBackground: true,
+                backgroundStyle: {
+                  borderRadius: setSize(14),
+                  color: "rgba(242, 244, 247, 1)",
+                },
+                itemStyle: {
+                  borderRadius: setSize(14),
+                  color: setColor(
+                    "rgba(71, 222, 146, 1)",
+                    "rgba(71, 222, 146, 0)",
+                    1,
+                    0,
+                    0,
+                    0
+                  ),
+                },
+                data: [],
+              };
+            series.data = data.map((n) => {
+              xAxis.push(n.deviceMac);
+              nameArr.push(n.company);
+              return n.num;
+            });
+            initTransverseBarChart({
+              id: "alarm-analysis-chart1",
+              series,
+              xAxis,
+              options: {
+                nameArr,
+              },
+            });
           }
         })
         .catch((err) => {
@@ -275,7 +362,7 @@ export default {
 </script>
 
 <style scoped lang="less">
-  #AlarmAnalysis{
-
-  }
+#AlarmAnalysis {
+  height: 100%;
+}
 </style>

@@ -486,9 +486,9 @@ export const initTransverseBarChart = (data, callBack) => {
             }
             let idx = index + 1;
             if (idx <= 5) {
-              return `{nt${idx}|${idx}}{text|${n}}`;
+              return `{nt${idx}|${idx}}{text|${n}}{text1|(${options.nameArr[idx-1]})}`;
             } else {
-              return `{nt|${idx}}{text|${n}}`;
+              return `{nt|${idx}}{text|${n}}{text1|(${options.nameArr[idx-1]})}`;
             }
           },
           rich: {
@@ -496,8 +496,15 @@ export const initTransverseBarChart = (data, callBack) => {
               color: "rgba(102, 102, 102, 1)",
               align: "left",
               height: setSize(40),
-              fontSize: setSize(35),
-              padding: [setSize(-90), 0, 0, setSize(17)],
+              fontSize: setSize(30),
+              padding: [setSize(-90), 0, 0, setSize(4)],
+            },
+            text1: {
+              color: "rgba(102, 102, 102, 1)",
+              align: "left",
+              height: setSize(40),
+              fontSize: setSize(25),
+              padding: [setSize(-90), 0, 0, setSize(7)],
             },
             nt1: {
               backgroundColor: "rgba(248, 97, 97, 1)",
@@ -537,7 +544,7 @@ export const initTransverseBarChart = (data, callBack) => {
         type: "category",
         nameGap: setSize(36),
         inverse: true,
-        offset: options.unit ? setSize(-470) : setSize(-430),
+        offset: options.unit ? setSize(-470) : setSize(-400),
         axisTick: {
           show: false,
         },
@@ -552,7 +559,7 @@ export const initTransverseBarChart = (data, callBack) => {
               width: setSize(400),
               verticalAlign: "top",
               lineHeight: setSize(130),
-              fontSize: setSize(35),
+              fontSize: setSize(30),
             },
             unit: {
               color: "rgba(143, 159, 179, 1)",
@@ -601,7 +608,7 @@ export const initPieChart = (data, callBack) => {
 
   let option = {
     color: options.color || [
-      "rgba(11, 139, 251, 1)",
+      "#3C80F2",
       "rgba(108, 208, 255, 1)",
       "rgba(71, 222, 146, 1)",
       "rgba(255, 180, 97, 1)",
@@ -612,13 +619,13 @@ export const initPieChart = (data, callBack) => {
         left: "center",
         top: options.top || "38%",
         z: 99,
-        text: options.total.value + (options.total.unit || ""),
+        // text: options.total.value + (options.total.unit || ""),
         itemGap: setSize(8),
         textStyle: {
           color: "rgba(60, 128, 242, 1)",
           fontSize: setSize(69),
         },
-        subtext: options.total.name,
+        // subtext: options.total.name,
         subtextStyle: {
           color: "rgba(102, 102, 102, 1)",
           fontSize: setSize(35),
@@ -641,12 +648,17 @@ export const initPieChart = (data, callBack) => {
         showEmptyCircle: true,
         label: {
           show: options.label,
+          formatter: '{b}\n{c}({d}%)',
+          textStyle: {
+            ...font,
+            color: '#333'
+          }
         },
       },
     ],
   };
   myChart.setOption(option, true);
-  callBack(myChart);
+  callBack && callBack(myChart);
   window.addEventListener("resize", () => {
     myChart.setOption(option, true);
     myChart.resize();

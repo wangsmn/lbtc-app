@@ -27,4 +27,6 @@ export const queryPoliceData = (data) => post(`${baseURL}/police/queryPoliceData
 // 查询一段时间内每月超标的在线设备数
 export const queryPoliceMonthData = (data) => post(`${baseURL}/police/queryPoliceMonthData`, data);
 
+// 查询一段时间内每月超标的在线设备数
+export const getPoliceNumByType = (data) => post(`${baseURL}/zx/getPoliceNumByType`, data);
 
