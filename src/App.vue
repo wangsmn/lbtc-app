@@ -6,7 +6,7 @@
 
 <style lang="less">
 #app {
-  font-family: "PingFang";
+  font-family: "Barlow";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: #f0f4f7;

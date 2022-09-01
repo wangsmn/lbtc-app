@@ -31,6 +31,44 @@
       </div>
     </el-drawer>
 
+    <section class="card" v-if="zxDeviceNum">
+      <h4 class="title">总计</h4>
+      <div class="contain">
+        <p class="des">
+          <span
+            >在线数: <i>{{ zxDeviceNum.online }}</i
+            ><i class="unit">(个)</i>
+          </span>
+          /
+          <span
+            >总设备: <i>{{ zxDeviceNum.num }}</i
+            ><i class="unit">(个)</i></span
+          >
+        </p>
+        <el-progress
+          :text-inside="true"
+          :stroke-width="20"
+          :percentage="(zxDeviceNum && zxDeviceNum.percentage) || 0"
+        ></el-progress>
+        <div class="device-list">
+          <p>
+            <span>{{ zxDeviceNum.userNum }} <i class="unit">(个)</i> </span>
+            <span>单位数</span>
+          </p>
+          <p>
+            <span>{{ zxDeviceNum.deviceNum }}<i class="unit">(个)</i></span>
+            <span>净化器设备数量</span>
+          </p>
+          <p>
+            <span class="red"
+              >{{ zxDeviceNum.policeNum }}<i class="unit">(条)</i></span
+            >
+            <span>报警数</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
     <div id="mapMain"></div>
     <van-popup
       v-model="popupFlag"
@@ -106,7 +144,11 @@
 
 <script>
 import { mapState } from "vuex";
-import { queryUserByUserId, queryDeviceData } from "@/api/index";
+import {
+  queryUserByUserId,
+  queryDeviceData,
+  queryZxDeviceNumByUserId,
+} from "@/api/index";
 import AMapLoader from "@amap/amap-jsapi-loader";
 import { Toast } from "vant";
 export default {
@@ -245,6 +287,7 @@ export default {
       },
 
       drawer: false,
+      zxDeviceNum: null,
     };
   },
   computed: {
@@ -298,6 +341,28 @@ export default {
             }
           } else {
             Toast.fail(res.rspMsg);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+    getQueryZxDeviceNumByUserId() {
+      queryZxDeviceNumByUserId({
+        userId: this.user.id,
+        num: 1,
+        type: 3,
+      })
+        .then((res) => {
+          if (res.rspMsg === "操作成功" && res.data && res.data.length > 0) {
+            let data = res.data[0];
+            this.zxDeviceNum = {
+              ...data,
+              percentage: +parseFloat(
+                (Number(data.online) / Number(data.num)) * 100
+              ).toFixed(2),
+            };
           }
         })
         .catch((err) => {
@@ -362,9 +427,8 @@ export default {
       this.drawer = false;
 
       let pos = this.filterData.value.split(",");
-      console.log(pos);
 
-      this.map.setZoomAndCenter(14, [Number(pos[0]) + 0.01, pos[1]]);
+      this.map.setZoomAndCenter(13.4, [Number(pos[0]) + 0.015, Number(pos[1]) - 0.01]);
     },
 
     goPage(n) {
@@ -380,6 +444,7 @@ export default {
   created() {},
   mounted() {
     this.initMap();
+    this.getQueryZxDeviceNumByUserId();
   },
 };
 </script>
@@ -389,6 +454,57 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+  .unit{
+    font-size: 12px;
+    color: #333;
+    padding-left: 4px;
+  }
+  .des{
+    margin: 4px 0;
+    display: flex;
+    justify-content: flex-end;
+
+    span{
+      i:not(.unit){
+        font-size: 18px;
+        color: #409EFF;
+      }
+    }
+
+    .el-progress-bar__innerText{
+      font-size: 18px !important;
+    }
+  }
+
+  .device-list{
+    display: flex;
+    margin-top: 6px;
+    padding: 10px 0;
+    justify-content: space-around;
+    background:  rgba(60, 128, 242, .1);
+
+    border-radius: 4px;
+    p{
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+
+      span{
+        &:first-child{
+          font-size: 20px;
+          padding-bottom: 10px;
+          color: rgba(60, 128, 242, 1);
+
+          &.red{
+            color: red;
+          }
+        }
+      }
+
+      
+    }
+  }
+
   #mapMain {
     padding: 0px;
     margin: 0px;
