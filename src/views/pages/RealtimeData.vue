@@ -367,6 +367,7 @@ export default {
           data: [],
         },
       },
+      zxDeviceNum: null,
     };
   },
   watch: {},
