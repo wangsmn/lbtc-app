@@ -554,7 +554,7 @@ export default {
     padding: 0px;
     margin: 0px;
     width: 100%;
-    height: calc(100% - 210px);
+    height: calc(100% - 192px);
   }
 
   .filterBox {
