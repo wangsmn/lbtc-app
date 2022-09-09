@@ -2,8 +2,21 @@
   <div class="Home">
     <h2 class="title">
       <span>首页</span>
-      <span class="icon right-icon">
+      <span class="icon left-icon">
         <van-icon name="search" @click.stop="drawer = true" />
+      </span>
+      <span class="icon right-icon">
+        <van-popover
+          v-model="showPopover"
+          trigger="click"
+          :actions="actions"
+          @select="onSelect"
+          placement="bottom-end"
+        >
+          <template #reference>
+            <van-icon name="user-o" />
+          </template>
+        </van-popover>
       </span>
     </h2>
 
@@ -50,21 +63,30 @@
           :stroke-width="20"
           :percentage="(zxDeviceNum && zxDeviceNum.percentage) || 0"
         ></el-progress>
-        <div class="device-list">
-          <p>
-            <span>{{ zxDeviceNum.userNum }} <i class="unit">(个)</i> </span>
-            <span>单位数</span>
-          </p>
-          <p>
-            <span>{{ zxDeviceNum.deviceNum }}<i class="unit">(个)</i></span>
-            <span>净化器设备数量</span>
-          </p>
-          <p>
-            <span class="red"
-              >{{ zxDeviceNum.policeNum }}<i class="unit">(条)</i></span
-            >
-            <span>报警数</span>
-          </p>
+        <div class="device-list-home">
+          <div>
+            <img :src="require('@/assets/home-icon1.png')" alt="" />
+            <p>
+              <span>{{ zxDeviceNum.userNum }} <i class="unit">(个)</i> </span>
+              <span>单位数</span>
+            </p>
+          </div>
+          <div>
+            <img :src="require('@/assets/home-icon2.png')" alt="" />
+            <p>
+              <span>{{ zxDeviceNum.deviceNum }}<i class="unit">(个)</i></span>
+              <span>净化器数量</span>
+            </p>
+          </div>
+          <div>
+            <img :src="require('@/assets/home-icon3.png')" alt="" />
+            <p>
+              <span class="red"
+                >{{ zxDeviceNum.policeNum }}<i class="unit">(条)</i></span
+              >
+              <span>报警数</span>
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -143,24 +165,28 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 import {
   queryUserByUserId,
   queryDeviceData,
   queryZxDeviceNumByUserId,
 } from "@/api/index";
 import AMapLoader from "@amap/amap-jsapi-loader";
-import { Toast } from "vant";
+import { Toast, Popover } from "vant";
 export default {
   name: "Home",
   props: {},
-  components: {},
+  components: {
+    [Popover.name]: Popover,
+  },
   data() {
     return {
       map: null,
       point: null,
       popupFlag: false,
       activeNames: [],
+      showPopover: false,
+      actions: [{ text: "退出登录" }],
       list: {
         data: null,
         label: [
@@ -295,6 +321,11 @@ export default {
   },
   watch: {},
   methods: {
+    ...mapMutations(["LOGOUT"]),
+    onSelect() {
+      this.$router.push({ name: "Login" });
+      this.LOGOUT();
+    },
     initMap() {
       AMapLoader.load({
         key: "a7748709c251dfe29dcd4810de81c1d2",
@@ -305,7 +336,7 @@ export default {
           this.map = new AMap.Map("mapMain", {
             viewMode: "3D",
             zoom: 10,
-            center: this.user.longitude || [116.42165, 39.89624],
+            center: this.user.longitude && this.user.longitude.split(",") || [116.42165, 39.89624],
           });
 
           this.getQueryUserByUserId();
@@ -390,7 +421,6 @@ export default {
 
     markerClick(e) {
       const data = e.target.getExtData();
-      console.log(data);
       this.popupFlag = true;
       this.list.data = data;
       this.deviceData.data = [];
@@ -428,7 +458,10 @@ export default {
 
       let pos = this.filterData.value.split(",");
 
-      this.map.setZoomAndCenter(13.4, [Number(pos[0]) + 0.015, Number(pos[1]) - 0.01]);
+      this.map.setZoomAndCenter(13.4, [
+        Number(pos[0]) + 0.015,
+        Number(pos[1]) - 0.01,
+      ]);
     },
 
     goPage(n) {
@@ -476,7 +509,7 @@ export default {
     }
   }
 
-  .device-list{
+  .device-list-home{
     display: flex;
     margin-top: 6px;
     padding: 10px 0;
@@ -484,32 +517,44 @@ export default {
     background:  rgba(60, 128, 242, .1);
 
     border-radius: 4px;
-    p{
+    &>div{
       display: flex;
-      flex-direction: column;
-      text-align: center;
+      align-items: center;
+      img{
+        height: 22px;
+        margin-right: 10px;
+      }
+      p{
+        display: flex;
+        flex-direction: column;
+        text-align: center;
 
-      span{
-        &:first-child{
-          font-size: 20px;
-          padding-bottom: 10px;
-          color: rgba(60, 128, 242, 1);
+        span{
+          &:first-child{
+            font-size: 20px;
+            // padding-bottom: 10px;
+            color: rgba(60, 128, 242, 1);
 
-          &.red{
-            color: red;
+            &.red{
+              color: red;
+            }
           }
         }
       }
 
-      
     }
   }
+  .card{
 
+  .contain{
+      margin-top: -10px;
+    }
+  }
   #mapMain {
     padding: 0px;
     margin: 0px;
     width: 100%;
-    height: calc(100% - 50px);
+    height: calc(100% - 210px);
   }
 
   .filterBox {

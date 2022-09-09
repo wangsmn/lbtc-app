@@ -1,8 +1,8 @@
-
 module.exports = {
   publicPath: "./",
   outputDir: "app",
   lintOnSave: true,
+  productionSourceMap: false,
   css: {
     loaderOptions: {
       postcss: {
@@ -19,14 +19,13 @@ module.exports = {
     hot: true,
     disableHostCheck: true,
     proxy: {
-      '/api': {
-        target: 'http://zxjc.lbtc.cn:8888',
+      "/api": {
+        target: "http://zxjc.lbtc.cn:8888",
         changeOrigin: true,
         pathRewrite: {
-          '^/api': ''
-        }
+          "^/api": "",
+        },
       },
-    }
-  }
+    },
+  },
 };
-

@@ -20,6 +20,11 @@ export default new Vuex.Store({
       localStorage.setItem("user", JSON.stringify(data));
       state.user = data;
     },
+    LOGOUT(state) {
+      state.token = null;
+      state.user = null;
+      localStorage.clear();
+    },
   },
   actions: {},
   modules: {},
