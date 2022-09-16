@@ -75,11 +75,7 @@
           >
             告警月度次数TOP20
           </van-divider>
-          <div
-            id="alarm-analysis-chart1"
-            class="chart"
-            style="height: 6rem"
-          ></div>
+          <div id="alarm-analysis-chart1" style="width: 100%"></div>
         </div>
       </section>
     </div>
@@ -343,6 +339,11 @@ export default {
               nameArr.push(n.company);
               return n.num;
             });
+
+            document.getElementById("alarm-analysis-chart1").style.height = `${
+              xAxis.length * 1.5
+            }rem`;
+
             initTransverseBarChart({
               id: "alarm-analysis-chart1",
               series,

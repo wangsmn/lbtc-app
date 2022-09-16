@@ -37,6 +37,7 @@ export const initLineChart = (data, callBack) => {
     color: "#333333",
     fontSize: setSize(24),
     fontweight: 400,
+    fontFamily: 'Barlow',
   };
 
   let myChart = echarts.getInstanceByDom(document.getElementById(data.id));
@@ -170,6 +171,7 @@ export const initScatterChart = (data, callBack) => {
     color: "#8F9FB3",
     fontSize: setSize(29),
     fontweight: 400,
+
   };
 
   let myChart = echarts.getInstanceByDom(document.getElementById(data.id));
@@ -394,6 +396,7 @@ export const initTransverseBarChart = (data, callBack) => {
     color: "rgba(102, 102, 102, 1)",
     fontSize: setSize(35),
     fontweight: 400,
+    fontFamily: 'Barlow',
   };
 
   const circle = {
@@ -405,11 +408,14 @@ export const initTransverseBarChart = (data, callBack) => {
     align: "center",
     verticalAlign: "top",
     borderRadius: setSize(40),
+    fontFamily: 'Barlow',
   };
   let myChart = echarts.getInstanceByDom(document.getElementById(data.id));
   if (myChart == null) {
     myChart = echarts.init(document.getElementById(data.id));
   }
+
+  myChart.resize();
 
   let option = {
     color: options.color || [
@@ -498,6 +504,7 @@ export const initTransverseBarChart = (data, callBack) => {
               height: setSize(40),
               fontSize: setSize(30),
               padding: [setSize(-90), 0, 0, setSize(4)],
+              fontFamily: 'Barlow',
             },
             text1: {
               color: "rgba(102, 102, 102, 1)",
@@ -505,6 +512,7 @@ export const initTransverseBarChart = (data, callBack) => {
               height: setSize(40),
               fontSize: setSize(25),
               padding: [setSize(-90), 0, 0, setSize(7)],
+              fontFamily: 'Barlow',
             },
             nt1: {
               backgroundColor: "rgba(248, 97, 97, 1)",
@@ -560,6 +568,7 @@ export const initTransverseBarChart = (data, callBack) => {
               verticalAlign: "top",
               lineHeight: setSize(130),
               fontSize: setSize(30),
+              fontFamily: 'Barlow',
             },
             unit: {
               color: "rgba(143, 159, 179, 1)",
@@ -568,6 +577,7 @@ export const initTransverseBarChart = (data, callBack) => {
               lineHeight: setSize(130),
               fontSize: setSize(30),
               padding: [0, 0, 0, setSize(13)],
+              fontFamily: 'Barlow',
             },
           },
         },
@@ -600,6 +610,7 @@ export const initPieChart = (data, callBack) => {
     color: "#8F9FB3",
     fontSize: setSize(29),
     fontweight: 400,
+    fontFamily: 'Barlow',
   };
   let myChart = echarts.getInstanceByDom(document.getElementById(data.id));
   if (myChart == null) {
@@ -642,16 +653,25 @@ export const initPieChart = (data, callBack) => {
     series: [
       {
         type: "pie",
-        radius: options.radius || ["50%", "72%"],
+        radius: options.radius || ["35%", "50%"],
         center: ["50%", "50%"],
         data: data.series,
         showEmptyCircle: true,
         label: {
           show: options.label,
-          formatter: '{b}\n{c}({d}%)',
+          formatter: '{b|{b}}\n{a|{c}}({a|{d}}%)',
           textStyle: {
             ...font,
+            fontSize: setSize(25),
             color: '#333'
+          },
+          rich: {
+            b: {
+              padding: [0,0,setSize(4),0]
+            },
+            a: {
+              color: "rgba(60, 128, 242, 1)",
+            }
           }
         },
       },

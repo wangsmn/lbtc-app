@@ -4,7 +4,20 @@
       <span class="icon left-icon">
         <van-icon name="arrow-left" @click.stop="$router.go(-1)" />
       </span>
-      <span>{{ device.name }}</span>
+      <el-select
+        v-model="device.mac"
+        placeholder="请选择"
+        popper-class="mySelect"
+        @change="changeFn"
+      >
+        <el-option
+          v-for="item in device.macArr"
+          :key="item.mac"
+          :label="item.name"
+          :value="item.mac"
+        >
+        </el-option>
+      </el-select>
       <span class="icon right-icon">
         <van-icon
           name="bulb-o"
@@ -33,11 +46,20 @@
                     class="status"
                     :src="
                       require('@/assets/' +
-                        (deviceData.data[items.param] ? 'red' : 'green') +
+                        (!Number(deviceData.data[items.param])
+                          ? 'red'
+                          : 'green') +
                         '.png')
                     "
                     alt=""
                   />
+                </span>
+                <span
+                  class="value"
+                  v-else-if="items.name == '风机工作电流'"
+                  :style="{ color: deviceData.color[index].color1 }"
+                  >{{ deviceData.data[items.param] || 0.0 }}
+                  <i>({{ items.unit }})</i>
                 </span>
                 <span
                   class="value"
@@ -51,7 +73,100 @@
           </ul>
         </div>
       </section>
-
+      <section class="card" v-if="deviceDcData">
+        <h4 class="title">
+          电场数据
+          <span class="sub-des"
+            >电源数量: <i class="value">{{ deviceDcData.data.length }}</i
+            >台</span
+          >
+        </h4>
+        <div class="contain">
+          <van-collapse v-model="deviceDcData.activeNames">
+            <van-collapse-item
+              :title="'电源:' + item.data1"
+              :name="item.data1"
+              v-for="item in deviceDcData.data"
+              :key="item.data1"
+            >
+              <div class="deviceDcDes">
+                <p>
+                  <span class="num"
+                    >{{ item.data2 }}<i class="unit">(kV)</i></span
+                  >
+                  <span class="name">二次电压</span>
+                </p>
+                <p>
+                  <span class="num"
+                    >{{ item.data3 }}<i class="unit">(mA)</i></span
+                  >
+                  <span class="name">二次电流</span>
+                </p>
+                <p>
+                  <span class="num"
+                    >{{ item.data4 }}<i class="unit">(W)</i></span
+                  >
+                  <span class="name">电源输出功率</span>
+                </p>
+                <p>
+                  <span class="num"
+                    >{{ item.data5 }} <i class="unit">(h)</i></span
+                  >
+                  <span class="name">累计工作时长</span>
+                </p>
+              </div>
+              <div :class="['deviceDcStateDes',  item.data6 == 1 ? 'openState' : 'closeState'] ">
+                <div class="icon">
+                  <img
+                    :src="
+                      require(`@/assets/icon-${
+                        item.data6 == 1 ? 'open' : 'close'
+                      }.png`)
+                    "
+                    alt=""
+                  />
+                </div>
+                <p>
+                  <span>保护状态</span>
+                  <span class="value">{{
+                    item.data7 == 0
+                      ? "电源保护"
+                      : item.data7 == 1
+                      ? "正常工作"
+                      : "-"
+                  }}</span>
+                </p>
+                <p>
+                  <span>短路保护</span>
+                  <span class="value">{{
+                    item.data8 == 0
+                      ? "未短路"
+                      : item.data8 == 1
+                      ? "短路保护"
+                      : "-"
+                  }}</span>
+                </p>
+                <p>
+                  <span>超温保护</span>
+                  <span class="value">{{
+                    item.data9 == 0
+                      ? "未超温"
+                      : item.data9 == 1
+                      ? "超温保护"
+                      : "-"
+                  }}</span>
+                </p>
+                <p>
+                  <span>手动模式</span>
+                  <span class="value">{{
+                    item.data10 == 0 ? "自动" : item.data10 == 1 ? "手动" : "-"
+                  }}</span>
+                </p>
+              </div>
+            </van-collapse-item>
+          </van-collapse>
+        </div>
+      </section>
       <section class="card">
         <h4 class="title">实时数据(小时)</h4>
         <div class="contain">
@@ -113,9 +228,7 @@
           </div>
           <van-empty
             description="暂无数据"
-            v-if="
-              exceedingStandard.data && exceedingStandard.data.length == 0
-            "
+            v-if="exceedingStandard.data && exceedingStandard.data.length == 0"
           />
           <div v-else id="exceeding-standard-chart" class="chart"></div>
         </div>
@@ -168,8 +281,33 @@
                   :key="index"
                 >
                   <span>{{ item.environmentData.syncTime }}</span>
-                  <span v-for="(n, i) in deviceData.label" :key="i">
-                    {{ item.environmentData[n.param] }}
+                  <span
+                    v-for="(n, i) in deviceData.label"
+                    :key="i"
+                    :class="[
+                      n.bz && Number(item.environmentData[n.param]) > n.bz
+                        ? 'red'
+                        : '',
+                    ]"
+                  >
+                    <template v-if="i == 0 || i == 1">
+                      <img
+                        :src="
+                          require('@/assets/' +
+                            (!Number(item.environmentData[n.param])
+                              ? 'red'
+                              : 'green') +
+                            '.png')
+                        "
+                        alt=""
+                      />
+                    </template>
+                    <span class="value" v-else-if="i == 4"
+                      >{{ item.environmentData[n.param] || 0.0 }}
+                    </span>
+                    <template v-else>
+                      {{ item.environmentData[n.param] || "-" }}
+                    </template>
                   </span>
                 </li>
               </ul>
@@ -214,7 +352,7 @@ export default {
     return {
       device: null,
       maxDate: new Date(),
-      minDate: new Date(new Date().valueOf() - 24 * 60 * 60 * 1000 * 60),
+      minDate: new Date(new Date().valueOf() - 24 * 60 * 60 * 1000 * 365 * 2),
       deviceData: {
         data: null,
         color: [
@@ -223,12 +361,12 @@ export default {
             color1: "rgba(124, 198, 35, 1)",
           },
           {
-            color: "rgba(136, 201, 157, .1)",
-            color1: "rgba(136, 201, 157, 1)",
-          },
-          {
             color: "rgba(25, 240, 242, .1)",
             color1: "rgba(25, 240, 242, 1)",
+          },
+          {
+            color: "rgba(136, 201, 157, .1)",
+            color1: "rgba(136, 201, 157, 1)",
           },
           {
             color: "rgba(62, 184, 180, .1)",
@@ -275,20 +413,27 @@ export default {
             name1: "非甲烷</br>总烃</br><i>(mg/m3)</i>",
             param: "data3",
             unit: "mg/m3",
+            bz: 10,
           },
           {
             name: "颗粒物浓度瞬时值",
             name1: "颗粒物</br>浓度</br><i>(μg/m3)</i>",
             param: "data2",
             unit: "μg/m3",
+            bz: 5,
           },
           {
             name: "油烟浓度瞬时值",
             name1: "油烟</br>浓度</br><i>(μg/m3)</i>",
             param: "data1",
             unit: "μg/m3",
+            bz: 1,
           },
         ],
+      },
+      deviceDcData: {
+        data: [],
+        activeNames: [],
       },
       hourData: {
         label: [
@@ -380,6 +525,24 @@ export default {
       })
         .then((res) => {
           if (res.rspMsg === "操作成功") {
+            let arr = [];
+            Object.keys(res.data).forEach((n) => {
+              if (n.includes("Unit")) {
+                arr.push(res.data[n]);
+              }
+            });
+
+            arr.length > 0 &&
+              arr.sort((a, b) => {
+                return a.data1.slice(4) - b.data1.slice(4);
+              });
+            this.deviceDcData =
+              arr.length > 0
+                ? {
+                    activeNames: [arr[0].data1],
+                    data: arr,
+                  }
+                : null;
             this.deviceData.data = res.data.dataS;
           }
         })
@@ -443,8 +606,6 @@ export default {
     },
 
     changeValue(n) {
-      console.log(n);
-
       if (n.name === "告警") {
         this.policeData.pickerData = {
           ...this.policeData.pickerData,
@@ -466,7 +627,6 @@ export default {
 
     // 历史数据
     historyDataOnConfirm(date) {
-      console.log(date);
       this.historyData.date = this.formatterDate(date);
       this.historyData.show = false;
       this.queryHistoryDataPageFn();
@@ -578,44 +738,48 @@ export default {
               });
             });
 
-            initLineChart({
-              id: "exceeding-standard-chart",
-              xAxis,
-              series,
-              options: {
-                yAxisName: "条",
-                yAxisName1: "mol/L",
-                top: setSize(150),
-                axisLabel: {
-                  formatter: (n) => {
-                    let v = n.split(" ");
-                    return v[0] + "\n" + v[1];
+            if (xAxis.length == 0) return;
+
+            this.$nextTick(() => {
+              initLineChart({
+                id: "exceeding-standard-chart",
+                xAxis,
+                series,
+                options: {
+                  yAxisName: "条",
+                  yAxisName1: "mol/L",
+                  top: setSize(150),
+                  axisLabel: {
+                    formatter: (n) => {
+                      let v = n.split(" ");
+                      return v[0] + "\n" + v[1];
+                    },
                   },
-                },
-                tooltip: {
-                  formatter: (n) => {
-                    let data = this.exceedingStandard.data.find(
-                      (v) => v.syncTime === n[0].name
-                    );
-                    let str = `报警类型: ${data.policeType} </br> 报警时间: ${n[0].name}</br>`;
-                    n.forEach((item) => {
-                      str += `${item.marker} ${item.seriesName}: ${item.value}</br>`;
-                    });
-                    return str;
+                  tooltip: {
+                    formatter: (n) => {
+                      let data = this.exceedingStandard.data.find(
+                        (v) => v.syncTime === n[0].name
+                      );
+                      let str = `报警类型: ${data.policeType} </br> 报警时间: ${n[0].name}</br>`;
+                      n.forEach((item) => {
+                        str += `${item.marker} ${item.seriesName}: ${item.value}</br>`;
+                      });
+                      return str;
+                    },
                   },
+                  // legend: {
+                  //   selectedMode: "single",
+                  //   selected: {
+                  //     油烟最大值: true,
+                  //     油烟平均值: false,
+                  //     颗粒物最大值: false,
+                  //     颗粒物平均值: false,
+                  //     非甲烷总烃最大值: false,
+                  //     非甲烷总烃平均值: false,
+                  //   },
+                  // },
                 },
-                // legend: {
-                //   selectedMode: "single",
-                //   selected: {
-                //     油烟最大值: true,
-                //     油烟平均值: false,
-                //     颗粒物最大值: false,
-                //     颗粒物平均值: false,
-                //     非甲烷总烃最大值: false,
-                //     非甲烷总烃平均值: false,
-                //   },
-                // },
-              },
+              });
             });
           }
         })
@@ -725,23 +889,37 @@ export default {
         seriesData.push(n.policeNum);
       });
 
-      initLineChart({
-        id: "police-chart",
-        xAxis,
-        series: {
-          type: "line",
-          data: seriesData,
-        },
-        options: {
-          yAxisName: "条",
-          xAxisName: "日",
-          top: setSize(50),
-        },
+      this.$nextTick(() => {
+        initLineChart({
+          id: "police-chart",
+          xAxis,
+          series: {
+            type: "line",
+            data: seriesData,
+          },
+          options: {
+            yAxisName: "条",
+            xAxisName: "日",
+            top: setSize(50),
+          },
+        });
       });
+    },
+
+    changeFn() {
+      this.historyData.currentPage = 1;
+      this.getData(this.device.mac);
+      this.queryHistoryDataPageFn();
+      this.queryPoliceTypeNumFn();
+      this.queryPoliceDataFn();
     },
   },
   created() {
-    this.device = this.$route.query;
+    let query = this.$route.query;
+    this.device = {
+      ...query,
+      macArr: JSON.parse(query.macArr),
+    };
     this.getData(this.device.mac);
     this.queryHistoryDataPageFn();
     this.queryPoliceTypeNumFn();
@@ -758,6 +936,25 @@ export default {
     transform: scale(0.8);
   }
 
+  .title {
+    ::v-deep.el-select {
+      .el-input {
+        .el-input__inner {
+          text-align: center;
+          background: rgba(0, 0, 0, 0);
+          border: rgba(0, 0, 0, 0);
+          color: #fff;
+          font-size: 18px;
+          padding-right: 2px;
+        }
+
+        .el-select__caret {
+          color: #fff;
+        }
+      }
+    }
+  }
+
   .des {
     text-align: center;
     margin-bottom: 4px;
@@ -766,6 +963,13 @@ export default {
       padding: 0 6px;
       color: rgba(60, 128, 242, 1);
     }
+  }
+  ::v-deep .van-cell__title {
+    color: rgba(60, 128, 242, 1);
+  }
+  ::v-deep .van-cell,
+  ::v-deep .van-collapse-item__content {
+    padding: 10px 5px;
   }
 }
 </style>

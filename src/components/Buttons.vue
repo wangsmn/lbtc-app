@@ -32,6 +32,14 @@ export default {
   watch: {},
   methods: {
     change(n) {
+      if (this.data.active == n.value) {
+        this.data.active = "";
+        this.$emit("change", {
+          name: this.data.title,
+          value: "",
+        });
+        return;
+      }
       this.data.active = n.value;
       this.$emit("change", {
         name: this.data.title,

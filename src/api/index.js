@@ -11,6 +11,9 @@ export const userLogin = (data) => post(`${baseURL}/user/login`, data);
 export const queryUserByUserId = (data) =>
   post(`${baseURL}/user/queryUserByUserId`, data);
 
+export const queryUserLikeCompany = (data) =>
+  post(`${baseURL}/user/queryUserLikeCompany`, data);
+
 // 根据测点号查询实时数据接口
 export const queryDeviceData = (data) =>
   post(`${baseURL}/zx/queryDeviceData`, data);
