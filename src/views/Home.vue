@@ -216,7 +216,12 @@
                           <span class="name">累计工作时长</span>
                         </p>
                       </div>
-                      <div :class="['deviceDcStateDes',  n.data6 == 1 ? 'openState' : 'closeState'] ">
+                      <div
+                        :class="[
+                          'deviceDcStateDes',
+                          n.data6 == 1 ? 'openState' : 'closeState',
+                        ]"
+                      >
                         <div class="icon">
                           <img
                             :src="
@@ -229,7 +234,7 @@
                         </div>
                         <p>
                           <span>保护状态</span>
-                          <span class="value">{{
+                          <span :class="['value', { red: n.data7 == 0 }]">{{
                             n.data7 == 0
                               ? "电源保护"
                               : n.data7 == 1
@@ -239,7 +244,7 @@
                         </p>
                         <p>
                           <span>短路保护</span>
-                          <span class="value">{{
+                          <span :class="['value', { red: n.data8 == 1 }]">{{
                             n.data8 == 0
                               ? "未短路"
                               : n.data8 == 1
@@ -249,7 +254,7 @@
                         </p>
                         <p>
                           <span>超温保护</span>
-                          <span class="value">{{
+                          <span :class="['value', { red: n.data9 == 1 }]">{{
                             n.data9 == 0
                               ? "未超温"
                               : n.data9 == 1
@@ -454,6 +459,8 @@ export default {
         data: [],
         activeNames: [],
       },
+
+      x_pi: (3.14159265358979324 * 3000.0) / 180.0,
     };
   },
   computed: {
@@ -466,6 +473,19 @@ export default {
       this.$router.push({ name: "Login" });
       this.LOGOUT();
     },
+    changePoi(poi) {
+      let bd_lat = poi.split(",")[0];
+      let bd_lon = poi.split(",")[1];
+      let x = Number(bd_lon - 0.006);
+      let y = Number(bd_lat - 0.0065);
+      let z = Number(
+        Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * this.x_pi)
+      );
+      let theta = Number(Math.atan2(y, x) - 0.000003 * Math.cos(x * this.x_pi));
+      bd_lon = Number(z * Math.cos(theta));
+      bd_lat = Number(z * Math.sin(theta));
+      return [bd_lat, bd_lon];
+    },
     initMap() {
       AMapLoader.load({
         key: "a7748709c251dfe29dcd4810de81c1d2",
@@ -476,9 +496,8 @@ export default {
           this.map = new AMap.Map("mapMain", {
             viewMode: "3D",
             zoom: 10,
-            center: (this.user.longitude && this.user.longitude.split(",")) || [
-              116.42165, 39.89624,
-            ],
+            center: (this.user.longitude &&
+              this.changePoi(this.user.longitude)) || [116.42165, 39.89624],
           });
 
           this.getQueryUserByUserId();
@@ -572,7 +591,7 @@ export default {
       arr.forEach((item) => {
         if (item.longitude) {
           let marker = new AMap.Marker({
-            position: item.longitude.split(","),
+            position: this.changePoi(item.longitude),
             offset: new AMap.Pixel(-13, -30),
           });
 
@@ -649,7 +668,7 @@ export default {
       this.btn.active = "";
       this.drawer = false;
       try {
-        let pos = this.filterData.value.split(",");
+        let pos = this.changePoi(this.filterData.value);
 
         this.map.setZoomAndCenter(17, [
           Number(pos[0]) + 0.0007,
@@ -661,7 +680,6 @@ export default {
     },
 
     goPage(n) {
-      console.log(this.deviceData.data);
       this.$router.push({
         path: "/RealtimeData",
         query: {

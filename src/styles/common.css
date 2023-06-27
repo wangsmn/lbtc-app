@@ -248,6 +248,9 @@ h4.title .sub-des .value {
   font-size: 14px;
   margin-top: 6px;
 }
+.deviceDcStateDes p .value.red {
+  color: red !important;
+}
 .deviceDcStateDes p:nth-child(odd) {
   text-align: right;
 }

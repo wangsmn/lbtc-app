@@ -115,7 +115,12 @@
                   <span class="name">累计工作时长</span>
                 </p>
               </div>
-              <div :class="['deviceDcStateDes',  item.data6 == 1 ? 'openState' : 'closeState'] ">
+              <div
+                :class="[
+                  'deviceDcStateDes',
+                  item.data6 == 1 ? 'openState' : 'closeState',
+                ]"
+              >
                 <div class="icon">
                   <img
                     :src="
@@ -128,7 +133,7 @@
                 </div>
                 <p>
                   <span>保护状态</span>
-                  <span class="value">{{
+                  <span :class="['value', { red: item.data7 == 0 }]">{{
                     item.data7 == 0
                       ? "电源保护"
                       : item.data7 == 1
@@ -138,7 +143,7 @@
                 </p>
                 <p>
                   <span>短路保护</span>
-                  <span class="value">{{
+                  <span :class="['value', { red: item.data8 == 1 }]">{{
                     item.data8 == 0
                       ? "未短路"
                       : item.data8 == 1
@@ -148,7 +153,7 @@
                 </p>
                 <p>
                   <span>超温保护</span>
-                  <span class="value">{{
+                  <span :class="['value', { red: item.data9 == 1 }]">{{
                     item.data9 == 0
                       ? "未超温"
                       : item.data9 == 1
